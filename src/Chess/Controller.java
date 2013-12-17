@@ -26,16 +26,16 @@ public class Controller
 		
 		while(!checkMate)
 		{			
-			Position whiteKingPosition = team.getKingFromWhiteTeam();
-			Position blackKingPosition = team.getKingFromBlackTeam();
 			ArrayList<Piece> whiteTeam = new ArrayList<Piece>();
 			ArrayList<Piece> blackTeam = new ArrayList<Piece>();
 			
 			String player = whitePlayerTurn() ? "White" : "Black";
 			
-			if(whitePlayerTurn())
+			if(whitePlayerTurn() && !checkMate)
 			{
 				System.out.println("\nIt is Player " + player + "'s turn");
+				isKingInCheckNotifier();
+				
 				System.out.println("Here are the pieces that can move from your team!  Choose one!");
 				whiteTeam = getWhiteTeamPieces();
 				
@@ -129,9 +129,11 @@ public class Controller
 				}
 				board.printBoard();
 			}
-			else
+			else if(!(whitePlayerTurn()) && !checkMate)
 			{
 				System.out.println("\nIt is Player " + player + "'s turn");
+				isKingInCheckNotifier();
+				
 				System.out.println("Here are the pieces that can move from your team!  Choose one!");
 				blackTeam = getBlackTeamPieces();
 				
@@ -225,43 +227,6 @@ public class Controller
 				}
 				board.printBoard();
 			}
-			
-			// detects if and when check and/or check mate happens			
-			if(whitePlayerTurn())
-			{
-				if(isKingInCheck(whiteKingPosition))
-				{		
-					System.out.println();
-					System.out.println("\n\nPlayer " + otherTurnColor + "'s King is in Check!");
-					
-					if(isKingInCheckMate(whiteKingPosition))
-					{
-						String winner = whitePlayerTurn() ? black : white;
-						
-						System.out.println("\nTeam " + otherTurnColor + " has been Checkmated!"
-								+ "\nThe Winner is " + winner + " team!!"
-								+ " CONGRATULATIONS!");
-						checkMate = true;
-					}
-				}
-			}
-			else
-			{
-				if(isKingInCheck(blackKingPosition))
-				{
-					System.out.println("\n\nPlayer " + otherTurnColor + "'s King is in Check!");
-					
-					if(isKingInCheckMate(blackKingPosition))
-					{
-						String winner = whitePlayerTurn() ? black : white;
-						
-						System.out.println("\nTeam " + otherTurnColor + " has been Checkmated!"
-								+ "\nThe Winner is " + winner + " team!!"
-								+ " CONGRATULATIONS!");
-						checkMate = true;
-					}
-				}
-			}
 		}
 	}
 	
@@ -327,7 +292,7 @@ public class Controller
 	}
 	
 	public boolean whitePlayerTurn()
-	{		
+	{
 		whiteTurn = (totalTurns % 2 == 0) ? true : false;
 		return whiteTurn;
 	}
@@ -366,8 +331,56 @@ public class Controller
 		}
 	}
 
-	public void movePieceOnBoard(String command, Position pieceStart, Position pieceEnd)
+	public void isKingInCheckNotifier()
 	{
+		String currentTurnColor = whitePlayerTurn() ? white : black;
+		Position whiteKingPosition = team.getKingFromWhiteTeam();
+		Position blackKingPosition = team.getKingFromBlackTeam();
+		
+		// detects if and when check and/or check mate happens
+		if(whitePlayerTurn())
+		{
+			if(isKingInCheck(whiteKingPosition))
+			{		
+				System.out.println();
+				System.out.println("\n\nPlayer " + currentTurnColor + "'s King is in Check!");
+				
+				if(isKingInCheckMate(whiteKingPosition))
+				{
+					String winner = whitePlayerTurn() ? black : white;
+					
+					System.out.println("\nTeam " + currentTurnColor + " has been Checkmated!"
+							+ "\nThe Winner is " + winner + " team!!"
+							+ " CONGRATULATIONS!");
+					checkMate = true;
+					System.exit(0);
+				}
+			}
+		}
+		else
+		{
+			if(isKingInCheck(blackKingPosition))
+			{
+				System.out.println("\n\nPlayer " + currentTurnColor + "'s King is in Check!");
+				
+				if(isKingInCheckMate(blackKingPosition))
+				{
+					String winner = whitePlayerTurn() ? black : white;
+					
+					System.out.println("\nTeam " + currentTurnColor + " has been Checkmated!"
+							+ "\nThe Winner is " + winner + " team!!"
+							+ " CONGRATULATIONS!");
+					checkMate = true;
+					System.exit(0);
+				}
+			}
+		}
+	}
+	
+	public void movePieceOnBoard(String command, Position pieceStart, Position pieceEnd)
+	{		
+		String player = whitePlayerTurn() ? "Black" : "White";
+		
 		int x1 = pieceStart.getPositionX();
 		int y1 = pieceStart.getPositionY();
 		int x2 = pieceEnd.getPositionX();
@@ -434,7 +447,7 @@ public class Controller
 	}
 
 	private void movePieceCheck(Piece piece, int x1, int y1, int x2, int y2, Position start, Position end, String command, String startSpot, String endSpot)
-	{		 
+	{	
 		String currentTurnColor = whitePlayerTurn() ? white : black;
 		
 		if(board.getChessBoardSquare(x2, y2).getPiece().getPieceColor() != (piece.getPieceColor()))

@@ -7,12 +7,12 @@ public class ChessMouseListener implements MouseListener
 {
 	private ChessView view;
 	private Controller controller;
-	private static int pressedX;
-	private static int pressedY;
-	private static int releasedX;
-	private static int releasedY;
-	private static int cellWidth;
-	private static int cellHeight;
+	private int pressedX;
+	private int pressedY;
+	private int releasedX;
+	private int releasedY;
+	private int cellWidth;
+	private int cellHeight;
 	
 	public ChessMouseListener(ChessView view, Controller controller)
 	{
@@ -78,39 +78,8 @@ public class ChessMouseListener implements MouseListener
 		
 		releasedX = e.getX() / cellWidth;
 		releasedY = e.getY() / cellHeight;
-
-		if(releasedY == 0)
-		{
-			releasedY = 7;
-		}
-		else if(releasedY == 1)
-		{
-			releasedY = 6;
-		}
-		else if(releasedY == 2)
-		{
-			releasedY = 5;
-		}
-		else if(releasedY == 3)
-		{
-			releasedY = 4;
-		}
-		else if(releasedY == 4)
-		{
-			releasedY = 3;
-		}
-		else if(releasedY == 5)
-		{
-			releasedY = 2;
-		}
-		else if(releasedY == 6)
-		{
-			releasedY = 1;
-		}
-		else if(releasedY == 7)
-		{
-			releasedY = 0;
-		}
+		
+		releasedY = 7 - releasedY;
 		
 		System.out.println("\nCLICKING: "+controller.coordinateToPosition(pressedX, pressedY) + " " + controller.coordinateToPosition(releasedX, releasedY));
 		
@@ -122,7 +91,8 @@ public class ChessMouseListener implements MouseListener
 		Position pieceEnd = new Position(releasedX, releasedY);
 		
 		controller.movePieceOnBoard(command, pieceStart, pieceEnd);
-	
+		view.clearPossibleMoves();
+
 		view.repaint();
 	}
 

@@ -37,8 +37,9 @@ public class ChessView extends JPanel
 		int imageHeight = getHeight()/boardSize;
 		
 		drawTiles(imageWidth, imageHeight, g);
-		drawPieces(imageWidth, imageHeight, g);
 		drawPossibleMoves(imageWidth, imageHeight, g);
+		drawPieces(imageWidth, imageHeight, g);
+		
 	}
 	
 	public void getPossibleMovesToDraw(Piece piece, Position position)
@@ -53,18 +54,32 @@ public class ChessView extends JPanel
 		}
 	}
 	
+	public void drawBoard(Graphics g)
+	{
+		this.g = g;
+		int imageWidth = getWidth()/boardSize;
+		int imageHeight = getHeight()/boardSize;
+		
+		drawTiles(imageWidth, imageHeight, g);
+		drawPieces(imageWidth, imageHeight, g);
+	}
+	
+	public void clearPossibleMoves()
+	{
+		possibleMovesForPiece.clear();
+	}
+	
 	private void drawPossibleMoves(int imageWidth, int imageHeight, Graphics g)
 	{
 		for(int i = 0; i < possibleMovesForPiece.size(); i++)
 		{
 			g.setColor(Color.red);
 			int x = possibleMovesForPiece.get(i).getPositionX();
-			int y = possibleMovesForPiece.get(i).getPositionY();
+			int y = 7-possibleMovesForPiece.get(i).getPositionY();
 			
 			g.fillRect((getWidth()*x/boardSize)+5, (getHeight()*y/boardSize)+5, (getWidth()/boardSize)-10, (getHeight()/boardSize)-10);
 		}
 	}
-	
 	
 	private void drawPieces(int imageWidth, int imageHeight, Graphics g) 
 	{	  
@@ -90,7 +105,7 @@ public class ChessView extends JPanel
 	        			System.out.println("Please input a proper image file!");
 	        		}
 	        		
-	        		g.drawImage(pieceImage, (getWidth()*x/boardSize), (getHeight()*y/boardSize), imageWidth, imageHeight, null);
+	        		g.drawImage(pieceImage, (getWidth()*x/boardSize), (getHeight()*(7-y)/boardSize), imageWidth, imageHeight, null);
                 }
             }
         }
@@ -128,5 +143,6 @@ public class ChessView extends JPanel
 				g.drawString(" " + Letter + (boardSize-j), i * imageWidth, j * imageHeight + imageHeight);
 			}
 		}
+		controller.isKingInCheckNotifier();
 	}
 }
